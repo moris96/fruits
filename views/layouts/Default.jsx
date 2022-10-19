@@ -11,9 +11,9 @@ class Default extends React.Component {
                 </head>
                 <body>
                     <nav>
-                        <a href="/fruits">Go to Home Page For Fruits</a>
-                        <a href="/fruits/new">Create a New Fruit</a>
-                        { fruit? <a href={`/fruits/${fruit._id}/edit`}> {fruit.name} Edit Page </a> : ''}
+                        <a href="/fruits">Go to Home Page For Fruits</a><br/>
+                        <a href="/fruits/new">Create a New Fruit</a><br/>
+                        { fruit? <a href={`/fruits/${fruit._id}/edit`}> {fruit.name} Edit Page </a> : ''}<br/>
                         { fruit? <a href={`/fruits/${fruit._id}`}>{fruit.name} Show Page</a> : ''}
                     </nav>
                     <h1>
