@@ -4,6 +4,7 @@ const express = require('express');
 const methodOverride = require('method-override');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const cors = require('cors') //who's allowed access to API 
 
 //connect to database
 const db = require('./models/db')
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 
 // Middlewear that needs to be available in my routes controller
 app.use(express.urlencoded({ extended: true })) // Creates req.body
+app.use(cors());
 // right below urlencoded
 app.use(express.json());
 app.use(methodOverride('_method')); // Allows us to override methods
