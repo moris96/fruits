@@ -1,39 +1,44 @@
-// Import Modules and set up vars
 require('dotenv').config()
-const express = require('express');
-const methodOverride = require('method-override');
-const app = express();
-const PORT = process.env.PORT || 3000;
-const cors = require('cors') //who's allowed access to API 
-
-//connect to database
+// Require modules
+const express = require('express')
+const methodOverride = require('method-override')
+const cors = require('cors')
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const db = require('./models/db')
-db.once('open', () => {
-  console.log('connected to MongoDB Atlas')
-});
+const app = express()
 
-//Initialize View Engine
-app.set('view engine', 'jsx');
-app.engine('jsx', require('jsx-view-engine').createEngine())
-
-// Mount Express Middleware
+// Configure the app (app.set)
+/* Start Config */
+app.use(express.urlencoded({ extended: true })) // This code makes us have req.body <=============
 app.use((req, res, next) => {
   res.locals.data = {}
   next()
-}) // Creates res.locals.data
+})
+app.use(cors())
+app.engine('jsx', require('jsx-view-engine').createEngine())
+app.set('view engine', 'jsx') // register the jsx view engine
+db.once('open', () => {
+  console.log('connected to MongoDB Atlas')
+})
 
-// Middlewear that needs to be available in my routes controller
-app.use(express.urlencoded({ extended: true })) // Creates req.body
-app.use(cors());
-// right below urlencoded
-app.use(express.json());
-app.use(methodOverride('_method')); // Allows us to override methods
-app.use(express.static('public')); // Allows us to have Static Files
+app.use(
+  session({
+    secret: process.env.SECRET,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    saveUninitialized: true,
+    resave: false,
+  })
+)
 
-// Setting up localhost:3000/fruits as the entry for my routes
-app.use('/fruits', require('./controllers/routeController.js')); // Mounts our RESTFUL/INDUCES ROUTES at /fruits
+/* Start Middleware */
+app.use(methodOverride('_method'))
+app.use(express.static('public'))
+app.use('/fruits', require('./controllers/routeController'))
+app.use('/user', require('./controllers/authController'))
+/* END Middleware */
 
-// Listen on PORT
-app.listen(PORT, () => {
-  console.log('Listening on port', PORT)
+// Tell the app to listen on a port
+app.listen(3000, () => {
+  console.log('Listening on Port 3000')
 })
